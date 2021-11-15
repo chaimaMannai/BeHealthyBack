@@ -1,12 +1,12 @@
-const router=require('express').Router();
+ const router=require('express').Router();
 const _ = require('lodash');
 const User=require('../models/user');
 
 
 
-router.get('',async (req,res)=>{
+ /* router.get('',async (req,res)=>{
     res.send(await User.find());
-});
+}); */ 
 
 router.get('/:id',async (req,res)=>{
     let user = await User.findById(req.params.id);
@@ -17,7 +17,7 @@ router.get('/:id',async (req,res)=>{
 
 
 router.post('',async (req,res)=>{
-    let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'DateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
+    let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
     try {
         user = await user.save()
     } catch (error) {
@@ -26,4 +26,40 @@ router.post('',async (req,res)=>{
     res.status(201).send(user)
 });
 
-module.exports=router
+/* router.post('/medecin',async (req,res)=>{
+    let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse']))
+    try {
+        user = await user.save()
+    } catch (error) {
+        return res.status(400).send("Error store in DB: "+error.message)
+    }
+    res.status(201).send(user)
+}); */
+
+/* router.post('/coach',async (req,res)=>{
+    let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse','specialite']))
+    try {
+        user = await user.save()
+    } catch (error) {
+        return res.status(400).send("Error store in DB: "+error.message)
+    }
+    res.status(201).send(user)
+}); */
+
+
+ /* router.get('', async (req,res)=>{
+    let users = await User.find();
+    let medecins = [];
+
+    users.forEach(element => {
+        if (element.role == 'medecin')
+        {
+            medecins.push(element)
+        }
+        
+    });
+    res.send(medecins)
+})  */
+
+
+module.exports=router 
