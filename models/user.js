@@ -12,6 +12,7 @@ const UserSchema=new mongoose.Schema({
     taille : Number,
     adresse : String,
     specialite : String,
+    imc :Number,
     
     
 
