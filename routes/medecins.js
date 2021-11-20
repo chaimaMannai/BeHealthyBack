@@ -2,10 +2,39 @@ const router = require('express').Router();
 const _= require('lodash');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
+const ver = require('./users');
+const jwt = require('jsonwebtoken');
+//import {verifyToken} from '../routes/users';
 
-router.get('', async (req,res)=>{
+
+function verifyToken(req, res, next)
+{
+    if( !req.headers.authorization)
+    {
+        console.log('fuuuck')
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === ('null'))
+    {
+        return res.status(401).send('Unauthorized request')   
+    }
+
+    let payload = jwt.verify(token, 'secretkey')
+    if (!payload)
+    {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    console.log('yesss')
+    next()
+    
+}
+
+router.get('', verifyToken, async (req,res)=>{
     let users = await User.find();
     let medecins = [];
+
 
     users.forEach(element => {
         if (element.role == 'medecin')
@@ -18,7 +47,7 @@ router.get('', async (req,res)=>{
 });
 
 
-router.get('/:id', async (req,res)=>{
+router.get('/:id', verifyToken, async (req,res)=>{
     let medecin = await User.findById(req.params.id);
     if(!medecin)
         return res.status(404).send('Coach Id is not found')
@@ -27,7 +56,7 @@ router.get('/:id', async (req,res)=>{
 
 
 
-router.post('',async (req,res)=>{
+router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'medecin';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse']));
     
@@ -63,7 +92,7 @@ router.post('',async (req,res)=>{
 });
 
 
-router.put('/:id', async (req,res)=>{
+router.put('/:id', verifyToken, async (req,res)=>{
     let madecin = await User.findById(req.params.id);
     if(!madecin)
         return res.status(404).send('Medecin Id is not found')
@@ -75,7 +104,7 @@ router.put('/:id', async (req,res)=>{
 })
 
 
-router.delete('/:id', async (req,res)=>{
+router.delete('/:id', verifyToken, async (req,res)=>{
     let medecin = await User.findByIdAndDelete(req.params.id);
     if(!medecin)
         return res.status(404).send('Medecin Id is not found')
