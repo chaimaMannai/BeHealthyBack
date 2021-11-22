@@ -55,6 +55,15 @@ router.get('/:id', verifyToken, async (req,res)=>{
 });
 
 
+let transporter = nodemailer.createTransport({
+    service : 'gmail',
+    auth : {
+        user : "loubk123@gmail.com",
+        pass : "clubafricain"
+    }
+});
+
+
 
 router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'medecin';
@@ -67,13 +76,13 @@ router.post('', verifyToken,async (req,res)=>{
     }
     res.status(201).send(user)
 
-    let transporter = nodemailer.createTransport({
+    /* let transporter = nodemailer.createTransport({
         service : 'gmail',
         auth : {
             user : "loubk123@gmail.com",
             pass : "clubafricain"
         }
-    });
+    }); */
     
     
     let mailoptions = {
@@ -101,6 +110,20 @@ router.put('/:id', verifyToken, async (req,res)=>{
         madecin = _.merge(madecin,req.body);
         madecin = await madecin.save();
     res.send(madecin)
+
+    let mailoptions = {
+        from : 'loubk123@gmail.com',
+        to : madecin.e_mail,
+        subject : 'Inscription',
+        text :'Bonjour '+ madecin.firstName + ', vos infos sont changées, votre login est : '
+        + madecin.login +', votre mot de passe est : '+madecin.password
+    };
+    
+    transporter.sendMail(mailoptions, (err, data)=>{
+        if (err)
+        console.log('Mail error')
+        console.log('Email sent !!!!')
+    });
 })
 
 

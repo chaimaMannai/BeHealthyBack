@@ -53,6 +53,14 @@ router.get('/:id', verifyToken, async (req,res)=>{
 });
 
 
+let transporter = nodemailer.createTransport({
+    service : 'gmail',
+    auth : {
+        user : "loubk123@gmail.com",
+        pass : "clubafricain"
+    }
+});
+
 router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'coach';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse','specialite']))
@@ -62,16 +70,6 @@ router.post('', verifyToken,async (req,res)=>{
         return res.status(400).send("Error store in DB: "+error.message)
     }
     res.status(201).send(user)
-
-
-
-    let transporter = nodemailer.createTransport({
-        service : 'gmail',
-        auth : {
-            user : "loubk123@gmail.com",
-            pass : "clubafricain"
-        }
-    });
     
     
     let mailoptions = {
@@ -100,6 +98,21 @@ router.put('/:id', verifyToken, async (req,res)=>{
     coach = _.merge(coach,req.body);
     coach = await coach.save();
     res.send(coach)
+
+
+    let mailoptions = {
+        from : 'loubk123@gmail.com',
+        to : coach.e_mail,
+        subject : 'Inscription',
+        text :'Bonjour '+ coach.firstName + ', vos infos sont changées, votre login est : '
+        + coach.login +', votre mot de passe est : '+coach.password
+    };
+    
+    transporter.sendMail(mailoptions, (err, data)=>{
+        if (err)
+        console.log('Mail error')
+        console.log('Email sent !!!!')
+    });
 });
 
 router.delete('/:id', verifyToken, async (req,res)=>{
