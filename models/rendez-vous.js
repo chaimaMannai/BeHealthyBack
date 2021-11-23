@@ -1,10 +1,9 @@
-const { string, date } = require('joi');
 const mongoose=require('mongoose')
 
 const rendez_vouzSchema=new mongoose.Schema({
     date : Date,
     note : String,
-    validate : Boolean,
+    valid : Boolean,
     patient : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
     medecin : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
 
