@@ -45,7 +45,7 @@ router.get('/:id', async (req,res)=>{
 });
 
 
-/* router.post('',async (req,res)=>{
+router.post('',async (req,res)=>{
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
     try {
         user = await user.save()
@@ -53,7 +53,7 @@ router.get('/:id', async (req,res)=>{
         return res.status(400).send("Error store in DB: "+error.message)
     }
     res.status(201).send(user)
-}); */
+});
 
 
 

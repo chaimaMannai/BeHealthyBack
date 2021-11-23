@@ -3,6 +3,7 @@ const _= require('lodash');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
 const ver = require('./users');
+const Rdv = require('../models/rendezVous');
 const jwt = require('jsonwebtoken');
 //import {verifyToken} from '../routes/users';
 
@@ -63,7 +64,18 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-
+router.get('/patient/:id',async (req,res)=>{
+    console.log("yesssss");
+    let rdvs = await Rdv.find();
+    let patients = [] ;
+    rdvs.forEach (element =>{
+        if( element.medecin.id == req.params.id){
+            patients.push(element.patient);
+        }
+    });
+    res.send(patients)
+}
+)
 
 router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'medecin';
