@@ -4,7 +4,13 @@ const _ = require('lodash');
 const User=require('../models/user');
 
 
-router.get('', verifyToken ,async (req,res)=>{
+/* router.get('', verifyToken ,async (req,res)=>{
+    let user = await User.find();
+    res.send(user)
+});  */
+
+
+router.get('', async (req,res)=>{
     let user = await User.find();
     res.send(user)
 }); 
@@ -17,7 +23,7 @@ router.get('/:id',async (req,res)=>{
 });
 
 
-/* router.post('',async (req,res)=>{
+router.post('',async (req,res)=>{
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
     try {
         user = await user.save()
@@ -25,10 +31,10 @@ router.get('/:id',async (req,res)=>{
         return res.status(400).send("Error store in DB: "+error.message)
     }
     res.status(201).send(user)
-}); */
+});
 
 
-function verifyToken(req, res, next)
+/* function verifyToken(req, res, next)
 {
     if( !req.headers.authorization)
     {
@@ -84,7 +90,7 @@ router.post('/login', (req, res) =>{
             }
         }
     })
-})
+}) */
 
 
 

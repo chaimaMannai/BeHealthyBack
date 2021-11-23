@@ -1,12 +1,33 @@
 const router = require('express').Router();
 const _= require('lodash');
 const User = require('../models/user');
+const Rdv = require('../models/rendezVous');
 const nodemailer = require('nodemailer');
+
+/* router.get('/rdv',async(req,res)=>{
+    console.log("rdv");
+    let rdvs = await Rdv.find();
+    res.send(rdvs) 
+})
+ */
+router.get('/patient/:id',async (req,res)=>{
+    console.log("yesssss");
+    let rdvs = await Rdv.find();
+    let patients = [] ;
+    rdvs.forEach (element =>{
+        if( element.medecin.id == req.params.id){
+            patients.push(element.patient);
+        }
+    });
+    res.send(patients)
+}
+)
+
+
 
 router.get('', async (req,res)=>{
     let users = await User.find();
     let medecins = [];
-
     users.forEach(element => {
         if (element.role == 'medecin')
         {
