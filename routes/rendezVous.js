@@ -73,6 +73,8 @@ router.put('/:id',async(req,res)=>{
     /* if(req.body.title)
         course.title = req.body.title */
         rdv.valid = true;
+        //rdv.note = req.body.note;
+        rdv = _.merge(rdv, req.body);
         rdv = await rdv.save();
     res.send(rdv)
 
