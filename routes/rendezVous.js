@@ -2,6 +2,17 @@ const router = require('express').Router();
 const _= require('lodash');
 const Rdv = require('../models/rendezVous');
 const User = require('../models/user');
+const nodemailer = require('nodemailer');
+
+
+
+let transporter = nodemailer.createTransport({
+    service : 'gmail',
+    auth : {
+        user : "loubk123@gmail.com",
+        pass : "clubafricain"
+    }
+});
 
 
 
@@ -68,6 +79,7 @@ router.delete('/:id',async(req,res)=>{
 
 router.put('/:id',async(req,res)=>{
     let rdv = await Rdv.findById(req.params.id);
+    let patient = await User.findById(rdv.patient.id)
     if(!rdv)
         return res.status(404).send('Rdv Id is not found')
     /* if(req.body.title)
@@ -77,6 +89,21 @@ router.put('/:id',async(req,res)=>{
         rdv = _.merge(rdv, req.body);
         rdv = await rdv.save();
     res.send(rdv)
+    console.log('email user est : '+patient.e_mail)
+
+    let mailoptions = {
+        from : 'loubk123@gmail.com',
+        to : patient.e_mail,
+        subject : 'Rendez Vous',
+        text :'Bonjour '+ rdv.patient.firstName + ', vous avez passeé un rendez vous evec le medecin '
+        + rdv.medecin.firstName +' '+rdv.medecin.lastName+' le '+rdv.date+'.'
+    };
+    
+    transporter.sendMail(mailoptions, (err, data)=>{
+        if (err)
+        console.log('Mail error')
+        console.log('Email sent !!!!')
+    });
 
 
 })
