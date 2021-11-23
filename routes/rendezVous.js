@@ -19,6 +19,7 @@ router.post('/:id',async(req,res)=>{
 
     req.body.medecin.firstName=medecin.firstName
     req.body.medecin.lastName=medecin.lastName
+    req.body.valid = false
     let rdv = await new Rdv(_.pick(req.body,['date','note','valid','patient','medecin']))
 
     try {
