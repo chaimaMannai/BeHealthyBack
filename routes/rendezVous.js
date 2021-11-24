@@ -2,6 +2,7 @@ const router = require('express').Router();
 const _= require('lodash');
 const Rdv = require('../models/rendezVous');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 
@@ -14,9 +15,33 @@ let transporter = nodemailer.createTransport({
     }
 });
 
+function verifyToken(req, res, next)
+{
+    if( !req.headers.authorization)
+    {
+        console.log('Oh nooo !! ')
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === ('null'))
+    {
+        return res.status(401).send('Unauthorized request')   
+    }
 
+    let payload = jwt.verify(token, 'secretkey')
+    if (!payload)
+    {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    console.log('yesss')
+    next()
 
-router.post('/:id',async(req,res)=>{
+    console.log('ID est :', req.userId)
+    
+}
+
+router.post('/:id',verifyToken,async(req,res)=>{
     let medecin = await User.findById(req.body.medecin.id);
     let patient = await User.findById(req.params.id);
     if(!patient)
@@ -42,7 +67,7 @@ router.post('/:id',async(req,res)=>{
     res.status(201).send(rdv)
 });
 
-router.get('/valid/:id',async(req,res)=>{
+router.get('/valid/:id',verifyToken,async(req,res)=>{
     let rdvs = await Rdv.find();
     let RM = [] ;
     rdvs.forEach(element => {
@@ -55,7 +80,7 @@ router.get('/valid/:id',async(req,res)=>{
     });
     res.send(RM);
 })
-router.get('/nonvalid/:id',async(req,res)=>{
+router.get('/nonvalid/:id',verifyToken,async(req,res)=>{
     let rdvs = await Rdv.find();
     let RM = [] ;
     rdvs.forEach(element => {
@@ -69,7 +94,7 @@ router.get('/nonvalid/:id',async(req,res)=>{
     res.send(RM);
 })
 
-router.delete('/:id',async(req,res)=>{
+router.delete('/:id',verifyToken,async(req,res)=>{
     let rdv = await Rdv.findByIdAndDelete(req.params.id);
     if(!rdv)
         return res.status(404).send('Rendez-vous Id is not found')
@@ -77,7 +102,7 @@ router.delete('/:id',async(req,res)=>{
 
 })
 
-router.put('/:id',async(req,res)=>{
+router.put('/:id',verifyToken,async(req,res)=>{
     let rdv = await Rdv.findById(req.params.id);
     let patient = await User.findById(rdv.patient.id)
     if(!rdv)
@@ -95,7 +120,7 @@ router.put('/:id',async(req,res)=>{
         from : 'loubk123@gmail.com',
         to : patient.e_mail,
         subject : 'Rendez Vous',
-        text :'Bonjour '+ rdv.patient.firstName + ', vous avez passeé un rendez vous evec le medecin '
+        text :'Bonjour '+ rdv.patient.firstName + ', vous avez passé un rendez vous evec le medecin Dr.'
         + rdv.medecin.firstName +' '+rdv.medecin.lastName+' le '+rdv.date+'.'
     };
     
