@@ -3,6 +3,7 @@ const _= require('lodash');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
 
 
 function verifyToken(req, res, next)
@@ -64,6 +65,13 @@ let transporter = nodemailer.createTransport({
 router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'coach';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse','specialite']))
+
+    let passwd = user.password
+
+    let hashedPassword = await bcrypt.hash(user.password, 10)
+    user.password = hashedPassword
+
+
     try {
         user = await user.save()
     } catch (error) {
@@ -96,6 +104,13 @@ router.put('/:id', verifyToken, async (req,res)=>{
     /* if(req.body.title)
         course.title = req.body.title */
     coach = _.merge(coach,req.body);
+
+    let newPass = coach.password
+
+    let hashedPassword = await bcrypt.hash(coach.password, 10)
+    coach.password = hashedPassword
+
+
     coach = await coach.save();
     res.send(coach)
 
@@ -105,7 +120,7 @@ router.put('/:id', verifyToken, async (req,res)=>{
         to : coach.e_mail,
         subject : 'Inscription',
         text :'Bonjour '+ coach.firstName + ', vos infos sont changées, votre login est : '
-        + coach.login +', votre mot de passe est : '+coach.password
+        + coach.login +', votre mot de passe est : '+newPass
     };
     
     transporter.sendMail(mailoptions, (err, data)=>{

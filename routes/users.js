@@ -2,6 +2,7 @@
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const User=require('../models/user');
+const bcrypt = require('bcryptjs')
 
 
 function verifyToken(req, res, next)
@@ -47,6 +48,12 @@ router.get('/:id', async (req,res)=>{
 
 router.post('',async (req,res)=>{
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
+
+    let hashedPassword = await bcrypt.hash(user.password, 10)
+    user.password = hashedPassword
+    
+
+
     try {
         user = await user.save()
     } catch (error) {
@@ -62,7 +69,7 @@ router.post('',async (req,res)=>{
 router.post('/login', (req, res) =>{
     console.log('hiii')
     let userData = req.body;
-    User.findOne({login: userData.login}, (error, user) =>{
+    User.findOne({login: userData.login},async (error, user) =>{
         if (error)
         {
             console.log(error)
@@ -75,12 +82,16 @@ router.post('/login', (req, res) =>{
             }
             else
             {
-                if( user.password !== userData.password)
+                console.log(user.password)
+                let compare = await bcrypt.compare(req.body.password, user.password)
+                if(!compare)
                 {
+                    console.log('Invalid Password')
                     res.status(401).send('Invalid Password')
                 }
                 else
                 {
+                    console.log('login validé')
                     let payload = {subject : user._id}
                     let token= jwt.sign(payload, 'secretkey')
                     res.status(200).send({token})

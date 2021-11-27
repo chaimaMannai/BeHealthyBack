@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const ver = require('./users');
 const Rdv = require('../models/rendezVous');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
 //import {verifyToken} from '../routes/users';
 
 
@@ -80,6 +81,11 @@ router.get('/patient/:id',async (req,res)=>{
 router.post('', verifyToken,async (req,res)=>{
     req.body.role = 'medecin';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse']));
+
+    let passwd = user.password
+    
+    let hashedPassword = await bcrypt.hash(user.password, 10)
+    user.password = hashedPassword
     
     try {
         user = await user.save()
@@ -102,7 +108,7 @@ router.post('', verifyToken,async (req,res)=>{
         to : user.e_mail,
         subject : 'Inscription',
         text :'Bonjour '+ user.firstName + ', vous etes inscrit dans notre plateforme comme un medecin, votre login est : '
-        + user.login +', votre mot de passe est : '+user.password
+        + user.login +', votre mot de passe est : '+passwd
     };
     
     transporter.sendMail(mailoptions, (err, data)=>{
@@ -114,21 +120,29 @@ router.post('', verifyToken,async (req,res)=>{
 
 
 router.put('/:id', verifyToken, async (req,res)=>{
-    let madecin = await User.findById(req.params.id);
-    if(!madecin)
+    let medecin = await User.findById(req.params.id);
+    if(!medecin)
         return res.status(404).send('Medecin Id is not found')
     /* if(req.body.title)
         course.title = req.body.title */
-        madecin = _.merge(madecin,req.body);
-        madecin = await madecin.save();
-    res.send(madecin)
+        
+        medecin = _.merge(medecin,req.body);
+
+        let newPass = medecin.password
+
+        let hashedPassword = await bcrypt.hash(medecin.password, 10)
+        medecin.password = hashedPassword
+
+
+        medecin = await medecin.save();
+    res.send(medecin)
 
     let mailoptions = {
         from : 'loubk123@gmail.com',
         to : madecin.e_mail,
         subject : 'Inscription',
-        text :'Bonjour '+ madecin.firstName + ', vos infos sont changées, votre login est : '
-        + madecin.login +', votre mot de passe est : '+madecin.password
+        text :'Bonjour '+ medecin.firstName + ', vos infos sont changées, votre login est : '
+        + medecin.login +', votre mot de passe est : '+newPass
     };
     
     transporter.sendMail(mailoptions, (err, data)=>{
