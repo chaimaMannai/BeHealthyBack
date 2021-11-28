@@ -2,6 +2,7 @@ const router=require('express').Router();
 const _ = require('lodash');
 const User=require('../models/user');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt')
 
 
 
@@ -25,6 +26,7 @@ router.get('/:id',async (req,res)=>{
 
 
 router.post('',async (req,res)=>{
+    
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'DateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
     try {
         user = await user.save()
@@ -35,6 +37,8 @@ router.post('',async (req,res)=>{
 });
 
 router.post('/inscriptionPatient',async (req,res)=>{
+    const hashedPassword = await bcrypt.hash(req.body.password, 10) 
+    req.body.password=hashedPassword
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'DateNaissance', 'e_mail', 'login','password','adresse',]))
     try {
         user.role="patient";

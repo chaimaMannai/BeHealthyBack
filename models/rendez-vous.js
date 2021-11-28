@@ -5,17 +5,13 @@ const rendez_vouzSchema=new mongoose.Schema({
     
     date : Date,
     note : String,
-    //validate : Boolean,
+    valid : Boolean,
     // zedthom ena les attribus hedhoum
-
-    nomPatient :String,
+    patient : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
     medecin:{type : mongoose.Schema.Types.ObjectId, ref :'User'},
 
-    //patient : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
-    //medecin : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
-
-    //medecin:{type : mongoose.Schema.Types.ObjectId, ref :'User'},
-
+    
+   // 619110a67c67c542b026aa2e   //  619399cb38d020294824e326
 
 }); 
 
