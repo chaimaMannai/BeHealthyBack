@@ -10,9 +10,9 @@ router.post('/:id',async (req,res)=>{
     let patient = await User.findById(req.params.id);
     if(!patient)
         return res.status(404).send('Patient Id is not found')
-    req.body.id=req.params.id
-    req.body.firstName=patient.firstName
-    req.body.lastName=patient.lastName
+    //req.body.id=req.params.id
+    //req.body.patient.firstName=patient.firstName
+    //req.body.patient.lastName=patient.lastName
 
     let medecin = await User.findById(req.body.medecin);
     if(!medecin){
@@ -23,10 +23,10 @@ router.post('/:id',async (req,res)=>{
     }
     else
     {
-    let rdv = await new Rdv(lodashsh.pick(req.body,['patient','medecin','note']))
+    let rdv = await new Rdv(lodashsh.pick(req.body,['patient','medecin','date']))
     try {
         rdv.patient=patient;
-        rdv.date=Date.now();
+        //rdv.date=Date.now();//61994ad56a24a74e84f3a716 619399cb38d020294824e326
         rdv.valid=false;
         
         rdv = await rdv.save()

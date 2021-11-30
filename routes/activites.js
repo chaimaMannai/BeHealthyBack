@@ -25,9 +25,9 @@ router.post('/:id',async (req,res)=>{
     let coach = await User.findById(req.params.id);
     if(!coach)
         return res.status(404).send('coach Id is not found')
-    req.body.id=req.params.id
+    /*req.body.id=req.params.id
     req.body.firstName=coach.firstName
-    req.body.lastName=coach.lastName
+    req.body.lastName=coach.lastName*/
 
     let exercices = await Exercice.findById(req.body.exercices);
     if(!exercices){
