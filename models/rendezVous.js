@@ -4,10 +4,8 @@ const rendez_vouzSchema=new mongoose.Schema({
     date : Date,
     note : String,
     valid : Boolean,
-    patient : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
-    medecin : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String },
-
-
+    patient : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String, e_mail: String, adresse: String },
+    medecin : { id: {type : mongoose.Schema.Types.ObjectId, ref :'User'}, firstName: String, lastName: String }
 
     
     //medecin:{type : mongoose.Schema.Types.ObjectId, ref :'Medecin'},

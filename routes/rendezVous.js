@@ -49,6 +49,8 @@ router.post('',verifyToken,async(req,res)=>{
     req.body.patient.id=req.userId
     req.body.patient.firstName=patient.firstName
     req.body.patient.lastName=patient.lastName
+    req.body.patient.e_mail=patient.e_mail
+    req.body.patient.adresse=patient.adresse
 
     if(!medecin)
         return res.status(404).send('medecin Id is not found');
@@ -64,14 +66,17 @@ router.post('',verifyToken,async(req,res)=>{
         return res.status(400).send("Error Store in DB : "+error.message)
     }
 
+    console.log('rdv demandé avec le patient : '+ req.userId)
+
     res.status(201).send(rdv)
 });
 
-router.get('/valid/:id',verifyToken,async(req,res)=>{
+
+router.get('/valid/',verifyToken,async(req,res)=>{
     let rdvs = await Rdv.find();
     let RM = [] ;
     rdvs.forEach(element => {
-        if (element.medecin.id == req.params.id){
+        if (element.medecin.id == req.userId){
             if (element.valid){
                 RM.push(element)
             }
@@ -80,11 +85,11 @@ router.get('/valid/:id',verifyToken,async(req,res)=>{
     });
     res.send(RM);
 })
-router.get('/nonvalid/:id',verifyToken,async(req,res)=>{
+router.get('/nonvalid/',verifyToken,async(req,res)=>{
     let rdvs = await Rdv.find();
     let RM = [] ;
     rdvs.forEach(element => {
-        if (element.medecin.id == req.params.id){
+        if (element.medecin.id == req.userId){
             if (!element.valid){
                 RM.push(element)
             }

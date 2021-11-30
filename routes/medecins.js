@@ -49,6 +49,20 @@ router.get('', verifyToken, async (req,res)=>{
 });
 
 
+router.get('/patient/', verifyToken, async (req,res)=>{
+    console.log("yesssss");
+    let rdvs = await Rdv.find();
+    let patients = [] ;
+    rdvs.forEach (element =>{
+        if( element.medecin.id == req.userId){
+            patients.push(element.patient);
+        }
+    });
+    res.send(patients)
+}
+)
+
+
 router.get('/:id', verifyToken, async (req,res)=>{
     let medecin = await User.findById(req.params.id);
     if(!medecin)
@@ -65,20 +79,9 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-router.get('/patient/:id',async (req,res)=>{
-    console.log("yesssss");
-    let rdvs = await Rdv.find();
-    let patients = [] ;
-    rdvs.forEach (element =>{
-        if( element.medecin.id == req.params.id){
-            patients.push(element.patient);
-        }
-    });
-    res.send(patients)
-}
-)
 
-router.post('', verifyToken,async (req,res)=>{
+
+router.post('',async (req,res)=>{
     req.body.role = 'medecin';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse']));
 
