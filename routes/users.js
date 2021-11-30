@@ -35,6 +35,8 @@ function verifyToken(req, res, next)
 
 router.get('', verifyToken ,async (req,res)=>{
     let user = await User.find();
+    console.log('get')
+    console.log(req.userId)
     res.send(user)
 }); 
 

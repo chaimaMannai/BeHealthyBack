@@ -41,12 +41,12 @@ function verifyToken(req, res, next)
     
 }
 
-router.post('/:id',verifyToken,async(req,res)=>{
+router.post('',verifyToken,async(req,res)=>{
     let medecin = await User.findById(req.body.medecin.id);
-    let patient = await User.findById(req.params.id);
+    let patient = await User.findById(req.userId);
     if(!patient)
         return res.status(404).send('Patient Id is not found')
-    req.body.patient.id=req.params.id
+    req.body.patient.id=req.userId
     req.body.patient.firstName=patient.firstName
     req.body.patient.lastName=patient.lastName
 

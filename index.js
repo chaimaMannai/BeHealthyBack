@@ -7,6 +7,12 @@ const calendrier_router=require('./routes/calendrier')
 const rdv_router=require('./routes/rendezVous')
 const port=process.env.PORT ||5000 
 const app = express();
+
+const cors = require('cors')
+app.use(cors({
+    origin : '*'
+}));
+
 app.use(express.json())
 app.use('/api/users',user_router);
 app.use('/api/medecins',medecin_router);
