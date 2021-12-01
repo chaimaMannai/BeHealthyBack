@@ -65,6 +65,7 @@ router.post('',async (req,res)=>{
 
 
 router.post('/login', (req, res) =>{
+    let resultat = []
     console.log('hiii')
     let userData = req.body;
     User.findOne({login: userData.login},async (error, user) =>{
@@ -92,7 +93,13 @@ router.post('/login', (req, res) =>{
                     console.log('login validé')
                     let payload = {subject : user._id}
                     let token= jwt.sign(payload, 'secretkey')
-                    res.status(200).send({token})
+
+                    resultat.push(user);
+                    console.log(user)
+                    resultat.push(token)
+
+                    
+                    res.status(200).send(resultat)
                     
                 }
             }

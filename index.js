@@ -5,6 +5,9 @@ const medecin_router=require('./routes/medecins')
 const coach_router=require('./routes/coachs')
 const calendrier_router=require('./routes/calendrier')
 const rdv_router=require('./routes/rendezVous')
+const exercice_router=require('./routes/exercices')
+const activite_router=require('./routes/activites')
+const contactMarketing_router=require('./routes/contactMarketing')
 const port=process.env.PORT ||5000 
 const app = express();
 
@@ -19,4 +22,7 @@ app.use('/api/medecins',medecin_router);
 app.use('/api/coachs',coach_router);
 app.use('/api/calendriers',calendrier_router);
 app.use('/api/rdv',rdv_router);
+app.use('/api/exercice',exercice_router);
+app.use('/api/activite',activite_router);
+app.use('/api/contactMarketing',contactMarketing_router)
 app.listen(port,()=> console.log(`Server on ${port}...`))

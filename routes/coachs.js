@@ -32,7 +32,7 @@ function verifyToken(req, res, next)
 
 
 
-router.get('', verifyToken, async (req,res)=>{
+router.get('', async (req,res)=>{
     let users = await User.find();
     let coachs = [];
 
