@@ -33,7 +33,7 @@ function verifyToken(req, res, next)
     
 }
 
-router.get('', /*verifyToken,*/ async (req,res)=>{ // bloquit token hnee
+router.get('', verifyToken, async (req,res)=>{
     let users = await User.find();
     let medecins = [];
 
@@ -81,7 +81,7 @@ let transporter = nodemailer.createTransport({
 
 
 
-router.post('',async (req,res)=>{
+router.post('',verifyToken,async (req,res)=>{
     req.body.role = 'medecin';
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'adresse']));
 

@@ -5,24 +5,54 @@ const Activite = require('../models/activite');
 const User = require('../models/user');
 const Exercice = require('../models/exercice');
 
-router.get('',async (req,res)=>{
+
+
+function verifyToken(req, res, next)
+{
+    if( !req.headers.authorization)
+    {
+        console.log('Oh nooo !! ')
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === ('null'))
+    {
+        return res.status(401).send('Unauthorized request')   
+    }
+
+    let payload = jwt.verify(token, 'secretkey')
+    if (!payload)
+    {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    console.log('yesss')
+    next()
+
+    console.log('ID est :', req.userId)
+    
+}
+
+
+
+
+router.get('',verifyToken,async (req,res)=>{
+    let exercices = await Exercice.find();
+
+    
+    res.send(exercices);
+})
+
+
+router.get('',verifyToken,async (req,res)=>{
     let activites = await Activite.find();
 
     
     res.send(activites);
 })
 
-
-
-
-
-
-
-
-
-
-router.post('/:id',async (req,res)=>{
-    let coach = await User.findById(req.params.id);
+router.post('',verifyToken,async (req,res)=>{
+    let coach = await User.findById(req.userId);
     if(!coach)
         return res.status(404).send('coach Id is not found')
     /*req.body.id=req.params.id
@@ -61,7 +91,7 @@ router.post('/:id',async (req,res)=>{
 
 
 
-router.put('/:id',async (req,res)=>{
+router.put('/:id',verifyToken,async (req,res)=>{
     let product = await Product.findById(req.params.id);
     if(!product)
         return res.status(404).send('product Id is not found')
@@ -72,7 +102,7 @@ router.put('/:id',async (req,res)=>{
 })
 
 
-router.delete('/:id',async (req,res)=>{
+router.delete('/:id',verifyToken,async (req,res)=>{
     let exercice = await Exercice.findByIdAndDelete(req.params.id);
     if(!exercice)
         return res.status(404).send('exercice Id is not found')

@@ -4,17 +4,41 @@ const ContactMark = require('../models/contactMarketing');
 //var cors = require('cors')
 //var nodemailer = require('nodemailer');
 
+function verifyToken(req, res, next)
+{
+    if( !req.headers.authorization)
+    {
+        console.log('Oh nooo !! ')
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === ('null'))
+    {
+        return res.status(401).send('Unauthorized request')   
+    }
+
+    let payload = jwt.verify(token, 'secretkey')
+    if (!payload)
+    {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    console.log('yesss')
+    next()
+
+    console.log('ID est :', req.userId)
+    
+}
 
 
 
 
-
-router.get('',async (req,res)=>{
+router.get('',verifyToken,async (req,res)=>{
     let contact = await ContactMark.find();
     res.send(contact);
 })
 
-router.get('/numberContactMarketing',async (req,res)=>{
+router.get('/numberContactMarketing',verifyToken,async (req,res)=>{
     let contacts = await ContactMark.find();
     nb=contacts.length
     console.log(nb)
@@ -30,19 +54,7 @@ router.get('/:id',async (req,res)=>{
     res.send(contact)
 })
 // search by city or region 
-router.get('/search/:cityRegion',async (req,res)=>{
-    contactsResultas =[];
-    let contacts = await ContactMark.find();
-    for (let i=0; i<contacts.length; i++) 
-    {
-        if(contacts[i].city===req.params.cityRegion || contacts[i].region===req.params.cityRegion)
-        {
-            console.log(true)
-            contactsResultas.push(contacts[i])  
-        }
-    }
-    res.send(contactsResultas)
-})
+
 
 
 router.post('',async (req,res)=>{
@@ -71,7 +83,7 @@ router.put('/:id',async (req,res)=>{
 })*/
 
 
-router.delete('/:id',async (req,res)=>{
+router.delete('/:id',verifyToken,async (req,res)=>{
     let contact = await ContactMark.findByIdAndDelete(req.params.id);
     if(!contact)
         return res.status(404).send('product Id is not found')

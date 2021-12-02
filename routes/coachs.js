@@ -32,7 +32,7 @@ function verifyToken(req, res, next)
 
 
 
-router.get('', async (req,res)=>{ // hne mich bloquue token 
+router.get('',verifyToken,async (req,res)=>{ // hne mich bloquue token 
     let users = await User.find();
     let coachs = [];
 

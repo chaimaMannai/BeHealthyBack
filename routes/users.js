@@ -34,7 +34,7 @@ function verifyToken(req, res, next)
 
 
 
-router.get('' ,async (req,res)=>{
+router.get('' ,verifyToken,async (req,res)=>{
     let user = await User.find();
     console.log('get')
     console.log(req.userId)
@@ -44,7 +44,7 @@ router.get('' ,async (req,res)=>{
 
 
 
-router.post('',async (req,res)=>{
+router.post('',verifyToken,async (req,res)=>{
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
 
     let hashedPassword = await bcrypt.hash(user.password, 10)
@@ -151,8 +151,8 @@ router.post('/inscriptionPatient',async (req,res)=>{
 
 
 
-router.put('/profil/:id',async (req,res)=>{
-    let user = await User.findById(req.params.id);
+router.put('/profil',verifyToken,async (req,res)=>{
+    let user = await User.findById(req.userId);
     if(!user)
         return res.status(404).send('user Id is not found')
         
@@ -162,8 +162,8 @@ router.put('/profil/:id',async (req,res)=>{
     res.send(user)
 })
 
-router.get('/profil/:id',async (req,res)=>{
-    let user = await User.findById(req.params.id);
+router.get('/profil',verifyToken,async (req,res)=>{
+    let user = await User.findById(req.userId);
     if(!user)
         return res.status(404).send('user Id is not found')
     user.imc=(user.poid/((user.taille*user.taille)*100))*100;
@@ -173,12 +173,12 @@ router.get('/profil/:id',async (req,res)=>{
 })
 
 
-router.get('/medecins',async (req,res)=>{
+router.get('/medecins',verifyToken, async (req,res)=>{
     
     res.send(await User.find({role :"medecin"}));
 });
 //
-router.get('/patients',async (req,res)=>{
+router.get('/patients',verifyToken,async (req,res)=>{
     
     res.send(await User.find({role :"patient"}));
 });
@@ -190,7 +190,7 @@ router.get('/:id', async (req,res)=>{
     res.send(user)
 });
 /////////////////////////// deelte lel coach w medecin b nafs methode f nas service f front 
-router.delete('/:id', async (req,res)=>{  // ne9sa token
+router.delete('/:id',verifyToken, async (req,res)=>{  // ne9sa token
     let user = await User.findByIdAndDelete(req.params.id);
     if(!user)
         return res.status(404).send('user Id is not found')

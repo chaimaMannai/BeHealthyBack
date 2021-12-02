@@ -23,6 +23,35 @@ const Exercice = require('../models/exercice');
 
 
 
+function verifyToken(req, res, next)
+{
+    if( !req.headers.authorization)
+    {
+        console.log('Oh nooo !! ')
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if (token === ('null'))
+    {
+        return res.status(401).send('Unauthorized request')   
+    }
+
+    let payload = jwt.verify(token, 'secretkey')
+    if (!payload)
+    {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    console.log('yesss')
+    next()
+
+    console.log('ID est :', req.userId)
+    
+}
+
+
+
+
 router.get('',async (req,res)=>{
     let exercices = await Exercice.find();
 
@@ -62,7 +91,7 @@ router.post('',upload.single('image'),async (req,res)=>{
 
 
 
-router.put('/:id',async (req,res)=>{
+router.put('/:id',verifyToken,async (req,res)=>{
     let product = await Product.findById(req.params.id);
     if(!product)
         return res.status(404).send('product Id is not found')
@@ -73,7 +102,7 @@ router.put('/:id',async (req,res)=>{
 })
 
 
-router.delete('/:id',async (req,res)=>{
+router.delete('/:id',verifyToken,async (req,res)=>{
     let exercice = await Exercice.findByIdAndDelete(req.params.id);
     if(!exercice)
         return res.status(404).send('exercice Id is not found')
