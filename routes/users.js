@@ -177,13 +177,25 @@ router.get('/medecins',async (req,res)=>{
     
     res.send(await User.find({role :"medecin"}));
 });
-
+//
+router.get('/patients',async (req,res)=>{
+    
+    res.send(await User.find({role :"patient"}));
+});
+//////////
 router.get('/:id', async (req,res)=>{
     let user = await User.findById(req.params.id);
     if(!user)
         return res.status(404).send('User Id is not found')
     res.send(user)
 });
+/////////////////////////// deelte lel coach w medecin b nafs methode f nas service f front 
+router.delete('/:id', async (req,res)=>{  // ne9sa token
+    let user = await User.findByIdAndDelete(req.params.id);
+    if(!user)
+        return res.status(404).send('user Id is not found')
+    res.send(user)
+})
 
 
 module.exports=router 

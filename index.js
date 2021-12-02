@@ -15,6 +15,7 @@ const cors = require('cors')
 app.use(cors({
     origin : '*'
 }));
+app.use(express.static(__dirname + '/uploads'));
 
 app.use(express.json())
 app.use('/api/users',user_router);

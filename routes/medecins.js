@@ -33,7 +33,7 @@ function verifyToken(req, res, next)
     
 }
 
-router.get('', verifyToken, async (req,res)=>{
+router.get('', /*verifyToken,*/ async (req,res)=>{ // bloquit token hnee
     let users = await User.find();
     let medecins = [];
 
