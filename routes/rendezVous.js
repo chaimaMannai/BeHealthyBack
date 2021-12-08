@@ -54,7 +54,6 @@ router.post('',verifyToken,async(req,res)=>{
 
     if(!medecin)
         return res.status(404).send('medecin Id is not found');
-
     req.body.medecin.firstName=medecin.firstName
     req.body.medecin.lastName=medecin.lastName
     req.body.valid = false
@@ -66,7 +65,7 @@ router.post('',verifyToken,async(req,res)=>{
         return res.status(400).send("Error Store in DB : "+error.message)
     }
 
-    console.log('rdv demandé avec le patient : '+ req.userId)
+    console.log('rdv demandé avec le patient : '+ req.body.patient.id)
 
     res.status(201).send(rdv)
 });
