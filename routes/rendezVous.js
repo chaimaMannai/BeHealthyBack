@@ -98,6 +98,20 @@ router.get('/nonvalid/',verifyToken,async(req,res)=>{
     res.send(RM);
 })
 
+router.get('/:id',verifyToken,async(req,res)=>{
+
+    let rdv = await Rdv.findById(req.params.id);
+
+    if(!rdv)
+
+        return res.status(404).send('Rendez-vous Id is not found')
+
+    res.send(rdv)
+
+
+
+})
+
 router.delete('/:id',verifyToken,async(req,res)=>{
     let rdv = await Rdv.findByIdAndDelete(req.params.id);
     if(!rdv)
