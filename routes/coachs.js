@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const _= require('lodash');
 const User = require('../models/user');
+const Demandecoach = require('../models/demandeCoach')
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
@@ -30,7 +31,43 @@ function verifyToken(req, res, next)
     
 }
 
+// methode getPatient lel coach courant 
+router.get('/patients',verifyToken,async(req,res)=>{
+    let coach = await User.findById(req.userId);
+    if(coach){
+       
+   
+    let demandes = await Demandecoach.find().populate('coach').populate('patient')
+    console.log(demandes)
+    let patients = [] ;
+    demandes.forEach (element =>{
+        console.log(element.coach)
+        if(JSON.stringify(coach) === JSON.stringify(element.coach) ){
+           
+            //console.log('elpt',element.patient)
+            patients.push(element.patient);
+            //console.log(patients);
+        }
+    });
+   
+   
+   /* let patients =[]
+   demandes.forEach (element =>{
+       
+       
+            console.log('okkkkk')
+            patients.push(element.patient); */
+            res.send(patients)
+   }
+    else
+    {
+    return res.status(404).send('coach Id is not found')
+    }
+   
+     
+  })
 
+  ////
 
 router.get('',verifyToken,async (req,res)=>{ // hne mich bloquue token 
     let users = await User.find();
@@ -138,4 +175,8 @@ router.delete('/:id', verifyToken, async (req,res)=>{
 })
 
 
+
 module.exports=router 
+
+
+// ajout d'une seule methode get patients

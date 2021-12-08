@@ -40,6 +40,44 @@ router.get('' ,verifyToken,async (req,res)=>{
     console.log(req.userId)
     res.send(user)
 }); 
+//////////////////////////////////////////////////////////////////////////////
+router.get('/patientcourant',verifyToken ,async (req,res)=>{
+    let user = await User.findById(req.userId);
+    if(!user)
+        return res.status(404).send('User Id is not found')
+    res.send(user)
+});
+
+router.get('/numberPatients',verifyToken,async (req,res)=>{
+    let patients = await User.find({role :"patient"});
+    nb=patients.length
+    console.log(nb)
+    res.send((nb).toString());
+    
+    
+  })
+
+  router.get('/numberMedecins',verifyToken,async (req,res)=>{
+    let patients = await User.find({role :"medecin"});
+    nb=patients.length
+    console.log(nb)
+    res.send((nb).toString());
+    
+    
+  })
+
+  router.get('/numberCoachs',verifyToken,async (req,res)=>{
+    let patients = await User.find({role :"coach"});
+    nb=patients.length
+    console.log(nb)
+    res.send((nb).toString());
+    
+    
+  })
+
+  
+
+  /////////////////////////////////////////////////////////////////////////
 
 
 
@@ -183,12 +221,7 @@ router.get('/patients',verifyToken,async (req,res)=>{
     res.send(await User.find({role :"patient"}));
 });
 //////////
-router.get('/:id', async (req,res)=>{
-    let user = await User.findById(req.params.id);
-    if(!user)
-        return res.status(404).send('User Id is not found')
-    res.send(user)
-});
+
 /////////////////////////// deelte lel coach w medecin b nafs methode f nas service f front 
 router.delete('/:id',verifyToken, async (req,res)=>{  // ne9sa token
     let user = await User.findByIdAndDelete(req.params.id);

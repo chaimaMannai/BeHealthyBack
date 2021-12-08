@@ -3,6 +3,7 @@ const lodashsh = require('lodash');
 const ContactMark = require('../models/contactMarketing');
 //var cors = require('cors')
 //var nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next)
 {
