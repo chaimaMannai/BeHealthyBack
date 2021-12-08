@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
-
 const UserSchema=new mongoose.Schema({
+    
     firstName : String,
     lastName : String,
     dateNaissance : Date,
@@ -12,6 +12,7 @@ const UserSchema=new mongoose.Schema({
     taille : Number,
     adresse : String,
     specialite : String,
+    imc: Number,
     
     
 

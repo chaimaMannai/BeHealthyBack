@@ -3,7 +3,10 @@ const lodashsh = require('lodash');
 
 const Activite = require('../models/activite');
 const User = require('../models/user');
+const Demandecoach = require('../models/demandeCoach');
+
 const Exercice = require('../models/exercice');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -36,22 +39,33 @@ function verifyToken(req, res, next)
 
 
 
-router.get('',verifyToken,async (req,res)=>{
+/*router.get('',verifyToken,async (req,res)=>{
     let exercices = await Exercice.find();
 
     
     res.send(exercices);
-})
+}) */
 
 
 router.get('',verifyToken,async (req,res)=>{
-    let activites = await Activite.find();
-
-    
-    res.send(activites);
+    let activites = await Activite.find().populate('patient').populate('exercices')
+    let coach = await User.findById(req.userId);
+    let activitess = [] ;
+    activites.forEach (element =>{
+        console.log('okkkk')
+        console.log(element.coach.firstName)
+       
+        if( coach.firstName === element.coach.firstName){
+            console.log(element.coach)
+            activitess.push(element);
+        }
+    });
+   
+    res.send(activitess);
 })
 
 router.post('',verifyToken,async (req,res)=>{
+    
     let coach = await User.findById(req.userId);
     if(!coach)
         return res.status(404).send('coach Id is not found')
@@ -63,26 +77,58 @@ router.post('',verifyToken,async (req,res)=>{
     if(!exercices){
         return res.status(404).send('exercicce Id is not found')}
 
-    let patient = await User.findById(req.body.patient);
-    if(!patient){
-        return res.status(404).send('patient Id is not found')}
-    if(patient.role!=="patient")
-    {
-        return res.status(404).send('role is not patient') 
-    }
-    else
-    {
-    let activite = await new Activite(lodashsh.pick(req.body,['description','patient','coach','exercices']))
+        let demandes = await Demandecoach.find().populate('coach')
+        
+            let patients = [] ;
+            let trouver = false;
+            demandes.forEach (element =>{
+              
+                if(JSON.stringify(coach) === JSON.stringify(element.coach) ){
+                    
+                    
+                    patients.push(element.patient);
+                }
+            })
+            let pppp = await User.findById(req.body.patient);
+            
+            patients.forEach (element =>{
+                
+                console.log(element)
+                
+              
+                if(pppp.firstName == element.firstName ){
+                    
+                    
+                    console.log('raniiii')
+                    trouver = true;
+                }
+               
+            })
+            if(trouver=true){
+
+                req.body.coach= coach;
+                req.body.patient = pppp;
+                req.body.exercices =exercices;
+                
+let activite = await new Activite(lodashsh.pick(req.body,['description','patient','coach','exercices']))
     try {
+       
+       /* activite.patient=pppp;
         activite.coach=coach;
+        activite.exercices = exercices; */
+        
         activite = await activite.save()
     } catch (error) {
         return res.status(400).send("Error store in database: "+error.message)
     }
     res.status(201).send(activite)
     
-
 }})
+
+
+
+
+
     
    
     
