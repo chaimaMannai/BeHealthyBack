@@ -82,7 +82,7 @@ router.get('/numberPatients',verifyToken,async (req,res)=>{
 
 
 
-router.post('',verifyToken,async (req,res)=>{
+router.post('',async (req,res)=>{
     let user = await new User(_.pick(req.body, ['firstName', 'lastName', 'dateNaissance', 'e_mail', 'login','password', 'role', 'poid', 'taille', 'adresse', 'specialite']))
 
     let hashedPassword = await bcrypt.hash(user.password, 10)
