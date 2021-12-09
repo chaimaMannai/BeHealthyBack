@@ -54,7 +54,6 @@ router.post('',verifyToken,async(req,res)=>{
 
     if(!medecin)
         return res.status(404).send('medecin Id is not found');
-
     req.body.medecin.firstName=medecin.firstName
     req.body.medecin.lastName=medecin.lastName
     req.body.valid = false
@@ -66,7 +65,7 @@ router.post('',verifyToken,async(req,res)=>{
         return res.status(400).send("Error Store in DB : "+error.message)
     }
 
-    console.log('rdv demandé avec le patient : '+ req.userId)
+    console.log('rdv demandé avec le patient : '+ req.body.patient.id)
 
     res.status(201).send(rdv)
 });
@@ -97,6 +96,20 @@ router.get('/nonvalid/',verifyToken,async(req,res)=>{
         
     });
     res.send(RM);
+})
+
+router.get('/:id',verifyToken,async(req,res)=>{
+
+    let rdv = await Rdv.findById(req.params.id);
+
+    if(!rdv)
+
+        return res.status(404).send('Rendez-vous Id is not found')
+
+    res.send(rdv)
+
+
+
 })
 
 router.delete('/:id',verifyToken,async(req,res)=>{
